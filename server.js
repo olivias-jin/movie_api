@@ -1,34 +1,45 @@
-
-// url module
-const url = require('url');
-let addr = 'http://localhost:8080/';
-let q = new URL(addr,  'http://localhost:8080/');
-
-console.log(q.host); // returns 'localhost:8080'
-console.log(q.pathname); // returns '/default.html'
-console.log(q.search); // returns '?year=2017&month=february'
-
-let qdata = q.query; // returns an object: { year: 2017, month: 'february' }
-console.log(qdata.month); // returns 'february'
-
-
-// httlp module
 const http = require('http');
+const url = require('url');
+const fs = require('fs');
+const path = require('path');
+
+const logFilePath = path.join(__dirname, 'log.txt');
+
 
 http.createServer((request, response) => {
-  response.writeHead(200, {'Content-Type': 'text/plain'});
-  response.end('Hello Node!\n');
-}).listen(8080);
+  let addr = request.url,
+    q = new URL(addr, 'http://localhost:8080'),
+    filePath = '';
 
-console.log('My first Node test server is running on Port 8080.');
+    const timestamp = new Date().toISOString();
+    const logMessage = `${timestamp} - ${request.url}\n`;
 
+    fs.appendFile(logFilePath, logMessage, (err) => {
+      if (err) {
+        console.error('Failed to write to log.txt:', err);
+      }
+    });
 
-// fs module
-const fs = require("fs");
+    if (q.pathname.includes('documentation')) {
+      filePath = (__dirname + '/documentation.html');
+    } else {
+      filePath = 'index.html';
+    }
+  
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        response.writeHead(404, { 'Content-Type': 'text/plain' });
+      response.write('404 Not Found');
+      response.end();
+      } else{
+  
+      response.writeHead(200, { 'Content-Type': 'text/html' });
+      response.write(data);
+      response.end();
+}
 
-fs.readFile('input.txt', (err, data) => {
-  if (err) {
-    throw err;
-  }
-  console.log('File content: ' + data.toString());
-});
+  
+    });
+  
+  }).listen(8080);
+  console.log('My test server is running on Port 8080.');
