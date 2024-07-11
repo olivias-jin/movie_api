@@ -12,7 +12,7 @@ http.createServer((request, response) => {
     filePath = '';
 
     const timestamp = new Date().toISOString();
-    const logMessage = `${timestamp} - ${request.url}\n`;
+    const logMessage = '${timestamp} - ${request.url}\n;'
 
     fs.appendFile(logFilePath, logMessage, (err) => {
       if (err) {
