@@ -29,7 +29,10 @@ let movies:[
       "Name":"Drama"
     },
     "Director": {
-      "Name":"Robert Zemeckis",}
+      "Name":"Robert Zemeckis",
+      "Bio": ,
+      "Birth": "1952"
+    }
       
     "imageURL": "https://www.imdb.com/title/tt0109830/mediaviewer/rm1954748672/?ref_=tt_ov_i"
   "feature":True
@@ -37,42 +40,145 @@ let movies:[
 
 {
     "Title":"Spirited Away",
-    "Director": "Hayao Miyazaki"
+  "Description": "Chihiro's journey to save her parents and how it represents her transition into adulthood."
+   "Genre": {
+      "Name":"Animation"
+    },
+    "Director": {
+      "Name":"Hayao Miyazaki",
+      "Bio": ,
+      "Birth": "1963"
+    }
+      
+    "imageURL": ""
+  "feature":True
 },
 {
     "Title":'Wall E',
-    "Director": 'Andrew Stanton'
+  "Description": "The last robot left on Earth, programmed to clean up the planet, one trash cube at a time."
+   "Genre": {
+      "Name":"Animation"
+    },
+    "Director": {
+      "Name":"Andrew Stanton",
+      "Bio": ,
+      "Birth": "1965"
+    }
+      
+    "imageURL": ""
+  "feature":True
+    
 },
 
 {
     "Title":'Toy Story',
-    "Director":'John Lasseter'
+  "Description": "Taking place in a world where toys come to life when humans are not present, the plot of Toy Story focuses on the relationship between an old-fashioned pullstring cowboy doll named Woody and a modern space cadet action figure, Buzz Lightyear, as Woody develops jealousy towards Buzz when he becomes their owner Andy's favorite toy."
+   "Genre": {
+      "Name":"Animation"
+    },
+    "Director": {
+      "Name":"John Lasseter",
+      "Bio": ,
+      "Birth": "1957"
+    }
+      
+    "imageURL": ""
+  "feature":True
 },
 
 {
     "Title":'3 Idiots',
-    "Director": ' Rajkumar Hirani'
+  "Description": "follows college best friends, Farhan (R. Madhavan) and Raju (Sharman Joshi), who drive down to Shimla in search for Rancho (Aamir Khan), their long-lost buddy. "
+   "Genre": {
+      "Name":"Comedy"
+    },
+    "Director": {
+      "Name":"Rajkumar Hirani",
+      "Bio": ,
+      "Birth": "1962"
+    }
+      
+    "imageURL": ""
+  "feature":True
 },
 
 {
     "Title":'Up',
-    "Director": 'Pete Docter & Bob Peterson'
+  "Description": "78-year-old Carl Fredricksen travels to Paradise Falls in his house equipped with balloons, inadvertently taking a young stowaway.  "
+   "Genre": {
+      "Name":"Animation"
+    },
+    "Director": {
+      "Name":"Pete Docter & Bob Peterson",
+      "Bio": ,
+      "Birth": "1968 & 1961"
+    }
+      
+    "imageURL": ""
+  "feature":True
+
 },
 {
     "Title": 'The Sixth Sense',
-    "Director":'M. Night Shyamalan'
+   "Description": "Young Cole Sear (Haley Joel Osment) is haunted by a dark secret: he is visited by ghosts. Cole is frightened by visitations from those with unresolved problems who appear from the shadows. He is too afraid to tell anyone about his anguish, except child psychologist Dr. Malcolm Crowe (Bruce Willis)."
+   "Genre": {
+      "Name":"Psychological thriller"
+    },
+    "Director": {
+      "Name":"M. Night Shyamalan",
+      "Bio": ,
+      "Birth": "1970"
+    }
+      
+    "imageURL": ""
+  "feature":True
 },
 {
     "Title":'Hacksaw Ridge',
-    "Director": 'Mel Gibson'
+     "Description": "An intense and gripping war drama that tells the inspiring true story of Desmond Doss, a conscientious objector who served as a medic during World War II."
+   "Genre": {
+      "Name":"War"
+    },
+    "Director": {
+      "Name":"Mel Gibson",
+      "Bio": ,
+      "Birth": "1956"
+    }
+      
+    "imageURL": ""
+  "feature":True
+
 },
 {
     "Title":'Monsters, Inc',
-    "Director":'Pete Docter & David Silverman & Lee Unkrich'
+  "Description": "The city of Monstropolis in a world entirely populated by monsters is powered by energy from the screams of human children. At the Monsters, Inc., factory, skilled monsters employed as "scarers" venture into the human world to scare children and harvest their screams, through doors that activate portals to children's bedroom closets."
+   "Genre": {
+      "Name":"Animation"
+    },
+    "Director": {
+      "Name":"Pete Docter & David Silverman & Lee Unkrich",
+      "Bio": ,
+      "Birth": "1968 & 1957 & 1967"
+    }
+      
+    "imageURL": ""
+  "feature":True
 },
 {
     "Title":'The Truman Show',
-    "Director": 'Peter Weir'
+   "Description": "An insurance salesman is oblivious of the fact that his entire life is a TV show and his family members are mere actors. "
+   "Genre": {
+      "Name":"Comedy drama"
+    },
+    "Director": {
+      "Name":"Peter Weir",
+      "Bio": ,
+      "Birth": "1944"
+    }
+      
+    "imageURL": ""
+  "feature":True
+
 }
 ];
 
