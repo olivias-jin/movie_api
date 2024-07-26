@@ -16,13 +16,13 @@ let users= [
   {
     id: 1,
     name: "Vic",
-    favoriteMovies: []
+    favoriteMovies: ["Forrest Gump"]
   }
 ];
 
 
 let movies:[
-  {
+     {
     "Title":"Forrest Gump",
     "Description": "a mentally challenged man with an IQ of 75 who plays an accidental role in some of the most significant events of the 20th century.",
     "Genre": {
@@ -33,12 +33,9 @@ let movies:[
       "Bio": ,
       "Birth": "1952"
     }
-      
-    "imageURL": "https://www.imdb.com/title/tt0109830/mediaviewer/rm1954748672/?ref_=tt_ov_i"
-  "feature":True
-  },
-
-{
+     "imageURL": "https://www.imdb.com/title/tt0109830/mediaviewer/rm1954748672/?ref_=tt_ov_i"
+     "feature":True},
+       {
     "Title":"Spirited Away",
   "Description": "Chihiro's journey to save her parents and how it represents her transition into adulthood."
    "Genre": {
@@ -50,10 +47,10 @@ let movies:[
       "Birth": "1963"
     }
       
-    "imageURL": ""
-  "feature":True
-},
-{
+    "imageURL": "https://www.imdb.com/title/tt0245429/mediaviewer/rm4207852801/?ref_=tt_ov_i"
+  "feature":False
+  },
+  {
     "Title":'Wall E',
   "Description": "The last robot left on Earth, programmed to clean up the planet, one trash cube at a time."
    "Genre": {
@@ -65,12 +62,12 @@ let movies:[
       "Birth": "1965"
     }
       
-    "imageURL": ""
+    "imageURL": "https://www.imdb.com/title/tt0910970/mediaviewer/rm1659211008/?ref_=tt_ov_i"
   "feature":True
     
-},
+  },
 
-{
+  {
     "Title":'Toy Story',
   "Description": "Taking place in a world where toys come to life when humans are not present, the plot of Toy Story focuses on the relationship between an old-fashioned pullstring cowboy doll named Woody and a modern space cadet action figure, Buzz Lightyear, as Woody develops jealousy towards Buzz when he becomes their owner Andy's favorite toy."
    "Genre": {
@@ -82,11 +79,11 @@ let movies:[
       "Birth": "1957"
     }
       
-    "imageURL": ""
-  "feature":True
-},
+    "imageURL": "https://www.imdb.com/title/tt0114709/mediaviewer/rm3813007616/?ref_=tt_ov_i"
+  "feature":False
+  },
 
-{
+  {
     "Title":'3 Idiots',
   "Description": "follows college best friends, Farhan (R. Madhavan) and Raju (Sharman Joshi), who drive down to Shimla in search for Rancho (Aamir Khan), their long-lost buddy. "
    "Genre": {
@@ -98,11 +95,11 @@ let movies:[
       "Birth": "1962"
     }
       
-    "imageURL": ""
-  "feature":True
-},
+    "imageURL": "https://www.imdb.com/title/tt1187043/mediaviewer/rm2029391104/?ref_=tt_ov_i"
+  "feature":False
+  },
 
-{
+  {
     "Title":'Up',
   "Description": "78-year-old Carl Fredricksen travels to Paradise Falls in his house equipped with balloons, inadvertently taking a young stowaway.  "
    "Genre": {
@@ -114,11 +111,11 @@ let movies:[
       "Birth": "1968 & 1961"
     }
       
-    "imageURL": ""
-  "feature":True
+    "imageURL": "https://www.imdb.com/title/tt1049413/mediaviewer/rm3826338560/?ref_=tt_ov_i"
+  "feature":False
 
-},
-{
+  },
+  {
     "Title": 'The Sixth Sense',
    "Description": "Young Cole Sear (Haley Joel Osment) is haunted by a dark secret: he is visited by ghosts. Cole is frightened by visitations from those with unresolved problems who appear from the shadows. He is too afraid to tell anyone about his anguish, except child psychologist Dr. Malcolm Crowe (Bruce Willis)."
    "Genre": {
@@ -130,10 +127,10 @@ let movies:[
       "Birth": "1970"
     }
       
-    "imageURL": ""
+    "imageURL": "https://www.imdb.com/title/tt0167404/mediaviewer/rm2099059456/?ref_=tt_ov_i"
   "feature":True
-},
-{
+  },
+  {
     "Title":'Hacksaw Ridge',
      "Description": "An intense and gripping war drama that tells the inspiring true story of Desmond Doss, a conscientious objector who served as a medic during World War II."
    "Genre": {
@@ -145,11 +142,11 @@ let movies:[
       "Birth": "1956"
     }
       
-    "imageURL": ""
-  "feature":True
+    "imageURL": "https://www.imdb.com/title/tt2119532/mediaviewer/rm2660241152/?ref_=tt_ov_i"
+  "feature":False
 
-},
-{
+  },
+  {
     "Title":'Monsters, Inc',
   "Description": "The city of Monstropolis in a world entirely populated by monsters is powered by energy from the screams of human children. At the Monsters, Inc., factory, skilled monsters employed as "scarers" venture into the human world to scare children and harvest their screams, through doors that activate portals to children's bedroom closets."
    "Genre": {
@@ -161,10 +158,10 @@ let movies:[
       "Birth": "1968 & 1957 & 1967"
     }
       
-    "imageURL": ""
+    "imageURL": "https://www.imdb.com/title/tt0198781/mediaviewer/rm2785401856/?ref_=tt_ov_i"
   "feature":True
-},
-{
+  },
+  {
     "Title":'The Truman Show',
    "Description": "An insurance salesman is oblivious of the fact that his entire life is a TV show and his family members are mere actors. "
    "Genre": {
@@ -176,10 +173,10 @@ let movies:[
       "Birth": "1944"
     }
       
-    "imageURL": ""
+    "imageURL": "https://www.imdb.com/title/tt0120382/mediaviewer/rm1927354112/?ref_=tt_ov_i"
   "feature":True
 
-}
+  }
 ];
 
 
@@ -198,21 +195,70 @@ app.post('/users', (req, res) => {
 });
 
 
-// READ
-app.get('/movies', (req, res) =>{
-  res.status(200).json(movies);
+//UPDATE
+app.put('/users/:id', (req, res) =>{
+  const { id } = req.params;
+  const: updatedUser = req.body;
+
+  let user = users.find(user => user.id ==id);
+
+  if (user){
+    user.name = updatedUser.name;
+    res.status(200).json(user);
+  }else {
+    res.status(400).send('no such user')
+  }
+})
+
+
+//CREATE
+app.post('/users/:id/"movieTitle', (req, res) =>{
+  const { id ,movieTitle } = req.params;
+
+
+  let user = users.find(user => user.id ==id);
+
+  if (user){
+    user.favoriteMovies.push(movieTitle);
+    res.status(200).send(`${movieTitle} jas been added to user ${id}'s array`);
+  }else {
+    res.status(400).send('no such user')
+  }
+})
+
+//DELETE
+app.delete('/users/:id/"movieTitle', (req, res) =>{
+  const { id ,movieTitle } = req.params;
+
+
+  let user = users.find(user => user.id ==id);
+
+  if (user){
+    user.favoriteMovies = user.favoriteMovies.filter( title =>title !== movieTitle);
+    res.status(200).send(`${movieTitle} jas been removed from user ${id}'s array`);
+  }else {
+    res.status(400).send('no such user')
+  }
+})
+
+//DELETE
+app.delete('/users/:id/"movieTitle', (req, res) =>{
+  const { id } = req.params;
+
+
+  let user = users.find(user => user.id ==id);
+
+  if (user){
+    user = users.filter( user =>user.id !== id);
+    res.status(200).send(` user ${id} has been deleted`);
+  }else {
+    res.status(400).send('no such user')
+  }
 })
 
 // READ
-app.get('/movies/:title', (req, res) =>{
-  const { title } = req.params;
-  const movie = movies.find( movie => movie.Title === title);
-
-  if (movie){
-    res.status(200).json(movie);
-  } else{
-    res.status(400).send('no such movie')
-  }
+app.get('/movies', (req, res) =>{
+  res.status(200).json(movies);
 })
 
 // READ
@@ -254,7 +300,7 @@ app.get('/movies/directors/:directorName', (req, res) =>{
   }
 })
 
-app.listen(8080, () => console.log("listeing on 8080"))
+app.listen(8081, () => console.log("listeing on 8080"))
 
 // app.get('/',(request, response) => {
 //   response.send('hello world')
