@@ -8,15 +8,15 @@ app.use(bodyParser.json());
 
 let users= [
   {
-    id: 1,
+    id:1,
     name: "Jin",
     favoriteMovies: []
   },
 
   {
-    id: 1,
+    id:2,
     name: "Vic",
-    favoriteMovies: []
+    favoriteMovies: ["Forrest Gump"]
   }
 ];
 
@@ -179,6 +179,37 @@ app.post('/users', (req, res) => {
 
 });
 
+//UPDATE
+app.put('/users/:id', (req, res) => {
+  const { id } = req.params;
+  const updatedUser = req.body;
+
+  let user = users.find( user => user.id == id);
+
+  if (user) {
+    user.name = updatedUser.name;
+    res.status(200).json(user);
+  } else{
+    res.status(400).send('no such user')
+  }
+
+});
+
+//CREATE
+app.post('/users/:id/:movieTitle', (req, res) => {
+  const { id } = req.params;
+  const updatedUser = req.body;
+
+  let user = users.find( user => user.id == id);
+
+  if (user) {
+    user.favoriteMovies.push(movieTitle);
+    res.status(200).json(user);
+  } else{
+    res.status(400).send('no such user')
+  }
+
+});
 
 // READ
 app.get('/movies', (req, res) =>{
@@ -197,17 +228,6 @@ app.get('/movies/:title', (req, res) =>{
   }
 })
 
-// READ
-app.get('/movies/:title', (req, res) =>{
-  const { title } = req.params;
-  const movie = movies.find( movie => movie.Title === title);
-
-  if (movie){
-    res.status(200).json(movie);
-  } else{
-    res.status(400).send('no such movie')
-  }
-})
 
 
 
@@ -236,7 +256,7 @@ app.get('/movies/directors/:directorName', (req, res) =>{
   }
 })
 
-app.listen(8080, () => console.log("listeing on 8080"))
+app.listen(8000, () => console.log("listeing on 8000"))
 
 // app.get('/',(request, response) => {
 //   response.send('hello world')
