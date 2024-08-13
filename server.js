@@ -175,35 +175,35 @@ let movies = [
 
 
 
-//CREATE
-app.post('/users', (req, res) => {
-  const newUser = req.body;
+// //CREATE
+// app.post('/users', (req, res) => {
+//   const newUser = req.body;
 
-  if (newUser.name){
-    newUser.id = uuid.v4();
-    users.push(newUser);
-    res.status(201).json(newUser)
-  } else {
-    res.status(400).send('users need names')
-  }
+//   if (newUser.name){
+//     newUser.id = uuid.v4();
+//     users.push(newUser);
+//     res.status(201).json(newUser)
+//   } else {
+//     res.status(400).send('users need names')
+//   }
+// });
 
-});
 
-//UPDATE
-app.put('/users/:id', (req, res) => {
-  const { id } = req.params;
-  const updatedUser = req.body;
+// //UPDATE
+// app.put('/users/:id', (req, res) => {
+//   const { id } = req.params;
+//   const updatedUser = req.body;
 
-  let user = users.find( user => user.id == id);
+//   let user = users.find( user => user.id == id);
 
-  if (user) {
-    user.name = updatedUser.name;
-    res.status(200).json(user);
-  } else{
-    res.status(400).send('no such user')
-  }
+//   if (user) {
+//     user.name = updatedUser.name;
+//     res.status(200).json(user);
+//   } else{
+//     res.status(400).send('no such user')
+//   }
 
-})
+// })
 
 //UPDATE
 app.put('/users/:id/:movieTitle', (req, res) => {
@@ -236,20 +236,20 @@ app.post('/users/:id/:movieTitle', (req, res) => {
 
 })
 
-//DELETE
-app.delete('/users/:id/:movieTitle', (req, res) => {
-  const { id, movieTitle } = req.params;
+// //DELETE
+// app.delete('/users/:id/:movieTitle', (req, res) => {
+//   const { id, movieTitle } = req.params;
 
-  let user = users.find( user => user.id == id);
+//   let user = users.find( user => user.id == id);
 
-  if (user) {
-    user.favoriteMovies = user.favoriteMovies.filter(title => title !== movieTitle);
-    res.status(200).json(`${movieTitle} has been removed from user ${id}'s array`);;
-  } else{
-    res.status(400).send('no such user')
-  }
+//   if (user) {
+//     user.favoriteMovies = user.favoriteMovies.filter(title => title !== movieTitle);
+//     res.status(200).json(`${movieTitle} has been removed from user ${id}'s array`);;
+//   } else{
+//     res.status(400).send('no such user')
+//   }
 
-})
+// })
 
 
 //DELETE
@@ -316,7 +316,7 @@ app.get('/movies/directors/:directorName', (req, res) =>{
   }
 })
 
-app.listen(8000, () => console.log("listeing on 8000"))
+app.listen(8080, () => console.log("listeing on 8080"))
 
 // app.get('/',(request, response) => {
 //   response.send('hello world')
@@ -340,3 +340,120 @@ app.listen(8000, () => console.log("listeing on 8000"))
 // }).listen(8080);
 
 // console.log('My first Node test server is running on Port 8080.');
+
+
+
+
+
+//Add a user
+/* We’ll expect JSON in this format
+{
+  ID: Integer,
+  Username: String,
+  Password: String,
+  Email: String,
+  Birthday: Date
+}*/
+
+app.post('/users', async (req, res) => {
+  await Users.findOne({ Username: req.body.Username })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.Username + 'already exists');
+      } else {
+        Users
+          .create({
+            Username: req.body.Username,
+            Password: req.body.Password,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday
+          })
+          .then((user) =>{res.status(201).json(user) })
+        .catch((error) => {
+          console.error(error);
+          res.status(500).send('Error: ' + error);
+        })
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
+});
+
+
+
+// Get all users
+app.get('/users', async (req, res) => {
+  await Users.find()
+    .then((users) => {
+      res.status(201).json(users);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+// Get a user by username
+app.get('/users/:Username', async (req, res) => {
+  await Users.findOne({ Username: req.params.Username })
+    .then((user) => {
+      res.json(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+
+// Update a user's info, by username
+/* We’ll expect JSON in this format
+{
+  Username: String,
+  (required)
+  Password: String,
+  (required)
+  Email: String,
+  (required)
+  Birthday: Date
+}*/
+app.put('/users/:Username', async (req, res) => {
+  await Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
+    {
+      Username: req.body.Username,
+      Password: req.body.Password,
+      Email: req.body.Email,
+      Birthday: req.body.Birthday
+    }
+  },
+  { new: true }) // This line makes sure that the updated document is returned
+  .then((updatedUser) => {
+    res.json(updatedUser);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error: ' + err);
+  })
+
+});
+
+
+
+// Delete a user by user
+name
+app.delete('/users/:Username', async (req, res) => {
+  await Users.findOneAndRemove({ Username: req.params.Username })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.Username + ' was not found');
+      } else {
+        res.status(200).send(req.params.Username + ' was deleted.');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});

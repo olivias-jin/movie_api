@@ -1,11 +1,3 @@
-const mongoose = require('mongoose');
-const Models = require('./models.js');
-
-const Movies = Models.Movie;
-const Users = Models.User;
-
-mongoose.connect('mongodb://localhost:27017/cdDB', { useNewUrlParser: true, useUnifiedTopology: true });
-
 const express = require('express'),
 morgan = require('morgan'),
 fs =require('fs'),
@@ -79,43 +71,8 @@ app.get('/movies', (req, res) => {
 });
 
 
-app.listen(8080, () => {
-    console.log('Your app is listening on port 8080.');
-  });
+// app.listen(8080, () => {
+//     console.log('Your app is listening on port 8080.');
+//   });
 
 
-
-//Add a user
-/* We’ll expect JSON in this format
-{
-  ID: Integer,
-  Username: String,
-  Password: String,
-  Email: String,
-  Birthday: Date
-}*/
-app.post('/users', async (req, res) => {
-    await Users.findOne({ Username: req.body.Username })
-      .then((user) => {
-        if (user) {
-          return res.status(400).send(req.body.Username + 'already exists');
-        } else {
-          Users
-            .create({
-              Username: req.body.Username,
-              Password: req.body.Password,
-              Email: req.body.Email,
-              Birthday: req.body.Birthday
-            })
-            .then((user) =>{res.status(201).json(user) })
-          .catch((error) => {
-            console.error(error);
-            res.status(500).send('Error: ' + error);
-          })
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(500).send('Error: ' + error);
-      });
-  });  
