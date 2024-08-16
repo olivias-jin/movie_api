@@ -1,11 +1,15 @@
+// Importing passport
+const passport = require('passport');
+
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 
 const Movies = Models.Movie;
 const Users = Models.User;
 
-const passport = require('passport');
-
+// Importing auth.js
+app.use(bodyParser.json());
+let auth = require('./auth')(app);
 
 mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true }).then(() => console.log('connected to mongo'));
 
@@ -17,7 +21,6 @@ bodyParser = require('body-parser'),
 uuid = require('uuid');
 app.use(bodyParser.json());
 
-let auth = require('./auth')(app);
 
 // Removing hardcoded: instead using MongoDB
 // let users= [

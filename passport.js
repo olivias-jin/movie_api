@@ -5,7 +5,7 @@ passportJWT = requrie('passport-jwt');
 
 let Users = Models.User,
 JWTStrategy = passportJWT.Strategy,
-ExtractJWT = passportJWT.ExtractJWT;
+ExtractJwt = passportJWT.ExtractJWT;
 
 passport.use(
     new LocalStrategy(
@@ -37,9 +37,9 @@ passport.use(
 );
 
 passport.use(new JWTStrategy({
-    jwtFromRequest:ExtracrtJWT.fromAuthHeaderAsBearerToken(),
-    secretOrKey: 'your_jwt_secret'}
-, asyn (jwtPayload, callback) => {
+    jwtFromRequest:ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: 'your_jwt_secret'}, 
+    async (jwtPayload, callback) => {
     return await Users. findById(jwtPayload._id)
     .then((user) => {
         return callback(null, user);
