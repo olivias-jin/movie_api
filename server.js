@@ -5,9 +5,9 @@ const Movies = Models.Movie;
 const Users = Models.User;
 
 const passport = require('passport');
-// require('./passport');
 
-mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true });
+
+mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true }).then(() => console.log('connected to mongo'));
 
 
 
@@ -212,7 +212,6 @@ let auth = require('./auth')(app);
 // })
 
 //UPDATE
-
 app.put('/users/:id/:movieTitle', (req, res) => {
   const { favoriteMovies } = req.params;
   const updatedmovie = req.body;
@@ -455,7 +454,6 @@ app.put('/users/:Username', async (req, res) => {
 
 
 // Delete a user by user
-name
 app.delete('/users/:Username', async (req, res) => {
   await Users.findOneAndRemove({ Username: req.params.Username })
     .then((user) => {
