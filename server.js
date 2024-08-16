@@ -4,8 +4,7 @@ const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
 
-
-// const passport = require('passport');
+const passport = require('passport');
 // require('./passport');
 
 mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true });
@@ -16,8 +15,9 @@ const express = require('express'),
 app = express(),
 bodyParser = require('body-parser'),
 uuid = require('uuid');
-
 app.use(bodyParser.json());
+
+let auth = require('./auth')(app);
 
 // Removing hardcoded: instead using MongoDB
 // let users= [
@@ -330,7 +330,6 @@ app.get('/movies/directors/:directorName', (req, res) =>{
   }
 })
 
-app.listen(8080, () => console.log("Listening on port 8080"))
 
 // app.get('/',(request, response) => {
 //   response.send('hello world')
@@ -511,3 +510,5 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), as
           res.status(500).send('Error: ' + err);
       })
 });
+
+app.listen(8080, () => console.log("Listening on port 8080"))
