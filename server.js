@@ -282,7 +282,7 @@ app.delete('/users/:id', (req, res) => {
     res.status(400).send('no such user')
   }
 
-})
+});
 
 
 
@@ -477,7 +477,6 @@ app.delete('/users/:Username', async (req, res) => {
       res.status(500).send('Error: ' + err);
     });
 });
-
 
 
 
