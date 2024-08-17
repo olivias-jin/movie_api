@@ -7,19 +7,25 @@ const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
 
+const express = require('express'),
+app = express(),
+bodyParser = require('body-parser');
+
 // Importing auth.js
 app.use(bodyParser.json());
 let auth = require('./auth')(app);
+
 
 mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true }).then(() => console.log('connected to mongo'));
 
 
 
-const express = require('express'),
-app = express(),
-bodyParser = require('body-parser'),
+
+
+
 uuid = require('uuid');
 app.use(bodyParser.json());
+
 
 
 // Removing hardcoded: instead using MongoDB
@@ -270,7 +276,7 @@ app.delete('/users/:id', (req, res) => {
   if (user) {
     user = users.filter(user => user.id != id);
     res.json(users)
-    ///res.status(200).send(`user $(id) had been deleted`);;
+    res.status(200).send(`user $(id) had been deleted`);;
 
   } else{
     res.status(400).send('no such user')
