@@ -49,3 +49,37 @@ passport.use(new JWTStrategy({
       return callback(error)
     });
 }));
+
+// add user
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: 'Username',
+      passwordField: 'Password',
+    },
+    async (username, password, callback) => {
+      console.log(`${username} ${password}`);
+      await Users.findOne({ Username: username})
+      .then((user)=>{
+        if (!user) {
+          console.log('incorret username');
+          return callback(null, false, {
+            message: 'Incorrect username or passsword.',
+          });
+        }
+        if (!user.validatePassword(password)) {
+          console.log('incorret password');
+          return callback(null, false, {message: 'Incorrect password.'});
+        }
+        console.log('finished');
+        return callback(null, user);
+      })
+      .catch((error) => {
+        if(error){
+          console.log(error);
+          return callback(error);
+        }
+      })
+    }
+  )
+);
