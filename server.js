@@ -1,23 +1,6 @@
 // validator
 const { check, validationResult } = require('express-validator');
-check('Username','Username contains non-alphanumeric characters - not allowed.').isAlphanumeric()
-
-
-// Cors
-const cors = require('cors');
-
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
-app.use(cors({
-  origin: (origin, callback) => {
-    if(!origin) return callback(null, true);
-    if(allowedOrigins.indexOf(ofigin) === -1){ //If a specific origin isn't found on the list of allowed origins
-      let message = 'The CORS policy for this application doesn`t allow access from origin' + origin;
-    return callback(new Error(message ), false);
-  }
-  return callback(null, true);
-  } 
-}));
-
+// check('Username','Username contains non-alphanumeric characters - not allowed.').isAlphanumeric()
 
 // Importing passport
 const passport = require('passport');
@@ -28,8 +11,31 @@ const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
 
-const express = require('express'),
-app = express(),
+
+mongoose.connect( process.env.CONNECTION_URI || 'mongodb://localhost:27017/myFlixDB', 
+
+  { useNewUrlParser: true, useUnifiedTopology: true });
+
+  const express = require('express');
+  const app = express();
+  
+// Cors
+const cors = require('cors');
+
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+app.use(cors({
+  origin: (origin, callback) => {
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){ //If a specific origin isn't found on the list of allowed origins
+      let message = 'The CORS policy for this application doesn`t allow access from origin' + origin;
+    return callback(new Error(message ), false);
+  }
+  return callback(null, true);
+  } 
+}));
+
+
+
 bodyParser = require('body-parser');
 
 // Importing auth.js
@@ -37,15 +43,13 @@ app.use(bodyParser.json());
 let auth = require('./auth')(app);
 
 
-mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true }).then(() => console.log('connected to mongo'));
-
 
 
 
 
 
 uuid = require('uuid');
-app.use(bodyParser.json());
+
 
 
 
@@ -241,6 +245,10 @@ app.use(bodyParser.json());
 
 // })
 
+app.get('/', (req, res) => {
+  res.status(200).send('hello')
+})
+
 //UPDATE
 app.put('/users/:id/:movieTitle', (req, res) => {
   const { favoriteMovies } = req.params;
@@ -322,16 +330,20 @@ app.get('/movies', (req, res) => {
 // READ
 app.get('/movies/:title', (req, res) =>{
   const { title } = req.params;
-  const movie = movies.find( movie => movie.Title === title);
+  Movies.findOne({ Title: title }).then((movie) => {
+    if (movie){
+      res.status(200).json(movie);
+    } else{
+      res.status(404).send('no such movie')
+    }
+  })
 
-  if (movie){
-    res.status(200).json(movie);
-  } else{
-    res.status(400).send('no such movie')
-  }
+  .catch((err) =>{
+    console.error(err)
+    res.status(500).json({error: err})
+  })
+
 })
-
-
 
 
 // READ
@@ -350,7 +362,7 @@ app.get('/movies/genre/:genreName', (req, res) =>{
 // READ
 app.get('/movies/directors/:directorName', (req, res) =>{
   const { directorName } = req.params;
-  const director = movies.find( movie => movie.Director.Name === directorName).Director;
+  const director = Movies.find( movie => movie.Director.Name === directorName).Director;
 
   if (director){
     res.status(200).json(director);
@@ -588,7 +600,7 @@ app.post('/users',
       }
 
       let hashedPassword = Models.Users.hashPassword(req.body.Password);
-      await Users.findone({ Username: req.body.Username}) 
+      await Users.findOne({ Username: req.body.Username}) 
       // Search to see if a user with the requested username already exists
       .then((user) => {
         if (user){
@@ -616,13 +628,11 @@ app.post('/users',
     });
   
 
-//  check the valication object for errors
-let errors = validationResult(req);
 
-if(!errors.isEmpty()) {
-  return res.status(422).json({ errors: errors.array()});
-}
 
+
+// mongoose.connect('mongodb://localhost:27017/myFlixDB', 
+//   { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 // app.listen(8080, () => console.log("Listening on port 8080"))
@@ -631,9 +641,3 @@ const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0',() => {
  console.log('Listening on Port ' + port);
 });
-
-mongoose.connect( process.env.CONNECTION_URI, 
-  { useNewUrlParser: true, useUnifiedTopology: true });
-
-mongoose.connect('mongodb://localhost:27017/myFlixDB', 
-  { useNewUrlParser: true, useUnifiedTopology: true });
