@@ -504,16 +504,17 @@ app.delete('/users/:Username', async (req, res) => {
 
 
 // passport app
-app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  await Movies.find()
-    .then((movies) => {
-      res.status(201).json(movies);
-    })
-    .catch((error) => {
-      console.error(error);
-      res.status(500).send('Error: ' + error);
-    });
-});
+// Exercise 3.4
+// app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
+//   await Movies.find()
+//     .then((movies) => {
+//       res.status(201).json(movies);
+//     })
+//     .catch((error) => {
+//       console.error(error);
+//       res.status(500).send('Error: ' + error);
+//     });
+// });
 
 app.put('/users/:Username', passport.authenticate('jwt', { session: false }), async (req, res) => {
   // CONDITION TO CHECK ADDED HERE
