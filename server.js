@@ -8,7 +8,9 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 
-const Movies = Models.Movie;
+// Exercise 3.4
+// const Movies = Models.Movie;
+const Movies = [];
 const Users = Models.User;
 
 
