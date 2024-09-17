@@ -304,35 +304,36 @@ app.delete('/users/:id', (req, res) => {
 });
 
 
-// READ
+// READ - Get all movies
 app.get('/movies', (req, res) => {
   Movies.find()
     .then((movies) => {
-      res.status(201).json(movies);
+      res.status(200).json(movies);
     })
     .catch((err) => {
-      console.error(err);
+      console.error('Error fetching movies: ', err);
       res.status(500).send('Error: ' + err);
     });
 });
 
-// READ
+// READ - Get movie by title
 app.get('/movies/:title', (req, res) =>{
   const { title } = req.params;
-  Movies.findOne({ Title: title }).then((movie) => {
+  Movies.findOne({ Title: title })
+  .then((movie) => {
     if (movie){
       res.status(200).json(movie);
     } else{
-      res.status(404).send('no such movie')
+      res.status(404).send('No such movie found');
     }
   })
 
   .catch((err) =>{
-    console.error(err)
-    res.status(500).json({error: err})
-  })
+    console.error(`Error fetching movie with title "${title}": `, err);
+    res.status(500).send('Error: ' + err);
+  });
 
-})
+});
 
 
 // READ a specific genre by genre name
