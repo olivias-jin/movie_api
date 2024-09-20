@@ -2,54 +2,59 @@
 const { check, validationResult } = require('express-validator');
 // check('Username','Username contains non-alphanumeric characters - not allowed.').isAlphanumeric()
 
+const express = require('express');
+const app = express();
+
+// Cors
+const cors = require('cors');
+const bodyParser = require('body-parser');
 // Importing passport
 const passport = require('passport');
 
 const mongoose = require('mongoose');
 const Models = require('./models.js');
+const bcrypt = require('bcryptjs');
+const uuid = require('uuid');
 
 const Movies = Models.Movie;
 const Users = Models.User;
 
-// add users
-const bcrypt = require('bcryptjs');
 
-
-mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-
-  const express = require('express');
-  const app = express();
+mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
   
-// Cors
-const cors = require('cors');
-
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
-app.use(cors({
-  origin: (origin, callback) => {
-    if(!origin) return callback(null, true);
-    if(allowedOrigins.indexOf(origin) === -1){ //If a specific origin isn't found on the list of allowed origins
-      let message = 'The CORS policy for this application doesn`t allow access from origin' + origin;
-    return callback(new Error(message ), false);
-  }
-  return callback(null, true);
-  } 
-}));
 
 
+  let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+  app.use(cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) { // If a specific origin isn't found on the list of allowed origins
+        let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
+        return callback(new Error(message), false);
+      }
+      return callback(null, true);
+    }
+  }));
 
-bodyParser = require('body-parser');
+
+
+
 
 // Importing auth.js
 app.use(bodyParser.json());
+
+
+// server.js
 let auth = require('./auth')(app);
 
+// auth.js
+module.exports = function(app) {
+  // Define authentication strategies and routes here
+};
 
 
-
-
-
-
-uuid = require('uuid');
 
 
 
@@ -501,7 +506,7 @@ app.put('/users/:Username', async (req, res) => {
 // });
 
 
-
+app.use(passport.initialize());
 // passport app
 app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
   await Movies.find()
@@ -541,81 +546,68 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), as
 
 
 // adding new users including a password
-app.post('/users', async (req, res) => {
-  let hashedPassword = Users.hashPassword(req.body.Password);
-  await Users.findOne({ Username: req.body.Username }) 
-  // Search to see if a user with the reqeusted username already eosts 
-  .then((user) => {
-    if (user){
-      // If the user is found, send a response that it already exists
-      return res.status(400).send(req.body.Username + ' already exists');
-      } else {
-        Users
-        .create({
-          Username :req.body.Username,
-          Password: hashedPassword,
-          Email: req.body.Email,
-          Birthday:req.body.Birthday
-        })
-        .then((user) => {res.status(201).json(user)})
-        .catch((error) => {
-          console.error(error);
-          res.status(500).send('Error: ' + error);
-        });
-      }
-})
-.catch((error) => {
-  console.error(error);
-  res.status(500).send('Error: ' + error);
-  });
-});
+// app.post('/users', async (req, res) => {
+//   let hashedPassword = Users.hashPassword(req.body.Password);
+//   await Users.findOne({ Username: req.body.Username }) 
+//   // Search to see if a user with the reqeusted username already eosts 
+//   .then((user) => {
+//     if (user){
+//       // If the user is found, send a response that it already exists
+//       return res.status(400).send(req.body.Username + ' already exists');
+//       } else {
+//         Users
+//         .create({
+//           Username :req.body.Username,
+//           Password: hashedPassword,
+//           Email: req.body.Email,
+//           Birthday:req.body.Birthday
+//         })
+//         .then((user) => {res.status(201).json(user)})
+//         .catch((error) => {
+//           console.error(error);
+//           res.status(500).send('Error: ' + error);
+//         });
+//       }
+// })
+// .catch((error) => {
+//   console.error(error);
+//   res.status(500).send('Error: ' + error);
+//   });
+// });
 
 
-app.post('/users',
-  // Validation logic here for request
-  //you can either use a chain of methods like .not().isEmpty()
-  //which means "opposite of isEmpty" in plain english "is not empty"
-  //or use .isLength({min: 5}) which means
-  //minimum value of 5 characters are only allowed
-  [
-    check('Username', 'Username is required').isLength({min: 5}),
+app.post('/users', [
+    check('Username', 'Username is required').isLength({ min: 5 }),
     check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
     check('Password', 'Password is required').not().isEmpty(),
-    check('Email','Email does not appear to be valid').isEmail()], async (req, res) => {
-      // check the validation object for errors
-      let errors = validationResult(req);
-      if(!errors.isEmpty()) {
-        return res.status(422).json({ errors:errors.array()});
+    check('Email', 'Email does not appear to be valid').isEmail()
+  ], async (req, res) => {
+    // Validation logic
+    let errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+    
+    // User creation logic
+    let hashedPassword = Users.hashPassword(req.body.Password);
+    try {
+      let user = await Users.findOne({ Username: req.body.Username });
+      if (user) {
+        return res.status(400).send(req.body.Username + ' already exists');
+      } else {
+        user = await Users.create({
+          Username: req.body.Username,
+          Password: hashedPassword,
+          Email: req.body.Email,
+          Birthday: req.body.Birthday
+        });
+        res.status(201).json(user);
       }
-
-      let hashedPassword = Models.Users.hashPassword(req.body.Password);
-      await Users.findOne({ Username: req.body.Username}) 
-      // Search to see if a user with the requested username already exists
-      .then((user) => {
-        if (user){
-          // If the user is found, send a response that it already exists
-          return res.status(400).send(req.body.Username +'already exists');
-        } else {
-          Users
-          .create({
-            Username:req.body.Username,
-            Password: hashedPassword,
-            Email: req.body.Email,
-            Birthday:req.body.Birthday
-          })
-          .then((user) => {res.status(201).json(user)})
-          .catch((error) => {
-            console.error(error);
-            res.status(500).send('Error: ' +error);
-          });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(500).send('Error:' + error);
-      });
-    });
-  
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    }
+  });
 
 
 
