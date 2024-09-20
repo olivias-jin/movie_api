@@ -37,10 +37,10 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(passport.initialize());
 
-// // Basic route
-// app.get('/', (req, res) => {
-//     res.status(200).send('hello');
-// });
+// Basic route
+app.get('/', (req, res) => {
+    res.status(200).send('Welcome to Movie API');
+});
 
 // CREATE user
 app.post('/users', [
