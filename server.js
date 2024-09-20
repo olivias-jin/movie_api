@@ -15,6 +15,8 @@ const Movies = Models.Movie;
 const Users = Models.User;
 const CONNECTION_URI = process.env.CONNECTION_URI;
 
+
+// Connect to MongoDB
 mongoose.connect(CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
