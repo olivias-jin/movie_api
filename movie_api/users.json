@@ -1,5 +1,0 @@
-{"_id":{"$oid":"66b19500f53718fe92228fc1"},"Username":"Olivia","Password":"Ol1234","Email":"olivia@gmail.com","Birthday":{"$date":"1996-03-18T00:00:00Z"},"favorites":["Dunkrik"]}
-{"_id":{"$oid":"66b19509f53718fe92228fc2"},"Username":"Victoria","Password":"Vi1234","Email":"victoria@gmail.com","Birthday":{"$date":"1996-07-24T00:00:00Z"}}
-{"_id":{"$oid":"66b19515f53718fe92228fc3"},"Username":"James","Password":"Ja1234","Email":"james@gmail.com","Birthday":{"$date":"1994-11-05T00:00:00Z"}}
-{"_id":{"$oid":"66b1951ef53718fe92228fc4"},"Username":"Jasmine","Password":"Jas1234","Email":"jasmine@gmail.com","Birthday":{"$date":"1996-10-10T00:00:00Z"}}
-{"_id":{"$oid":"66b6d313b8a20e1ad3755751"},"Username":"Hailey","Password":"Ha1234","Email":"Hailey@gmail.com","Birthday":{"$date":"1998-12-07T00:00:00Z"}}

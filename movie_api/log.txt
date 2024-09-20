@@ -1,5 +1,0 @@
-${timestamp} - ${request.url}
-;${timestamp} - ${request.url}
-;${timestamp} - ${request.url}
-;${timestamp} - ${request.url}
-;
