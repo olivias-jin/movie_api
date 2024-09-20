@@ -149,7 +149,6 @@ app.get('/movies', async (req, res) => {
     }
 });
 
-// Other movie routes (e.g., by title, genre, director) remain unchanged...
 
 const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0', () => {
