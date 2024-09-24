@@ -1,5 +1,8 @@
-${timestamp} - ${request.url}
-;${timestamp} - ${request.url}
-;${timestamp} - ${request.url}
-;${timestamp} - ${request.url}
-;
+mongoimport --uri mongodb+srv://myFlixDbAdmin:Password1@myflixdb.dxdou.mongodb.net/myFlixDB --collection movies --type json --file movies.json
+
+mongoimport --uri mongodb+srv://myFlixDbAdmin:Password1@myflixdb.dxdou.mongodb.net/myFlixDB --collection users --type json --file users.json
+
+mongoose.connect('mongodb://localhost:27017/dbname', { useNewUrlParser: true, useUnifiedTopology: true });
+
+
+mongodb+srv://myFlixDbAdmin:Password1@myflixdb.dxdou.mongodb.net/?retryWrites=true&w=majority&appName=myFlixDB

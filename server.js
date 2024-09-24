@@ -17,9 +17,7 @@ const CONNECTION_URI = process.env.CONNECTION_URI;
 
 
 // Connect to MongoDB
-mongoose.connect(CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error('MongoDB connection error:', err));
+mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // CORS setup
 let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
