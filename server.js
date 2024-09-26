@@ -131,11 +131,10 @@ app.delete('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { sessi
             res.status(400).send('No such user');
         }
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Error: ' + error);
+        console.error('Internal Server Error:', error); // More detailed error logging
+        res.status(500).send('Error: ' + error.message); // Send the error message
     }
 });
-
 
 // DELETE user
 app.delete('/users/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
