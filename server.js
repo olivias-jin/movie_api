@@ -86,20 +86,28 @@ app.get('/users', async (req, res) => {
 
 // Update user by username passport.authenticate('jwt', { session: false }), 
 app.put('/users/:Username', async (req, res) => {
-    if (req.user.Username !== req.params.Username) {
+    if(req.user.Username !== req.params.Username){
         return res.status(400).send('Permission denied');
     }
-    try {
-        const updatedUser = await Users.findOneAndUpdate(
-            { Username: req.params.Username },
-            { $set: req.body },
-            { new: true }
-        );
-        res.json(updatedUser);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error: ' + err);
-    }
+ await Users.findOneAndUpdate({Username:req.params.Username},
+  {
+    $set: {
+      Username: req.body.Username,
+      Password: req.body.Password,
+      Email: req.body.Email,
+      Birthday: req.body.Birthday,
+    },
+
+  },
+  {new: true}
+ )
+ .then((updatedUser) => {
+  res.json(updatedUser);
+})
+.catch((err) => {
+  console.error(err);
+  res.status(500).send('Error: ' + err);
+});
 });
 
 
