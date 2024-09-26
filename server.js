@@ -152,8 +152,8 @@ app.delete('/users/:id', passport.authenticate('jwt', { session: false }), async
     }
 });
 
-// READ movies ** add passport.authenticate 
-app.get('/movies', async (req, res) => {
+// READ movies 
+app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const movies = await Movies.find();
         res.status(200).json(movies);
