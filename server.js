@@ -147,7 +147,7 @@ app.delete('/users/:id/movies/:movieTitle', async (req, res) => {
 });
 
 // DELETE user passport.authenticate('jwt', { session: false }), 
-app.delete('/users/:id', async (req, res) => {
+app.delete('/users/:Username', async (req, res) => {
     const { id } = req.params;
     try {
         const user = await Users.findByIdAndDelete(id);
