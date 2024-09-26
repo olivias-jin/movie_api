@@ -116,6 +116,10 @@ app.post('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { session
 app.delete('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { session: false }), async (req, res) => {
     const { id, movieTitle } = req.params;
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).send('Invalid user ID');
+    }
+
     try {
         let user = await Users.findById(id);
         if (user) {
@@ -131,8 +135,8 @@ app.delete('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { sessi
             res.status(400).send('No such user');
         }
     } catch (error) {
-        console.error('Internal Server Error:', error); // More detailed error logging
-        res.status(500).send('Error: ' + error.message); // Send the error message
+        console.error('Internal Server Error:', error);
+        res.status(500).send('Error: ' + error.message);
     }
 });
 
