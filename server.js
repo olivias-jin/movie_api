@@ -37,6 +37,50 @@ app.get('/', (req, res) => {
     res.status(200).send('Welcome to Movie API');
 });
 
+
+
+//Get movies by genre
+app.get('/genres/:Name', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    await Movies.findOne({ 'Name': req.params.Name})
+        .then((genre) => {
+            if (genre) {
+                res.json(genre);
+            } else {
+                res.status(404).send(
+                    'Genre with the name ' + req.params.Name + ' was not found.'
+                );
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+  });
+
+
+
+  //GET director's name
+app.get('/directors/:name', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    await Movies.findOne({ 'Director.Name': req.params.name })
+        .then((director) => {
+            if (director) {
+                res.json(director.Director);
+            } else {
+                res.status(404).send(
+                    'Director with the name ' +
+                        req.params.name +
+                        ' was not found.'
+                );
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+  });
+
+
+
 // CREATE user
 app.post('/users', [
     check('Username', 'Username is required').isLength({ min: 5 }),
@@ -134,27 +178,25 @@ app.post('/users/:Username/movies/:movieTitle', async (req, res) => {
 
 // Remove favorite movie to user  passport.authenticate('jwt', { session: false }), 
 app.delete('/users/:Username/movies/:movieTitle', async (req, res) => {
-    const { Username, movieTitle } = req.params;
-
-    try {
-        let user = await Users.findById(id);
-        if (user) {
-            const movieIndex = user.favoriteMovies.indexOf(movieTitle);
-            if (movieIndex > -1) {
-                user.favoriteMovies.splice(movieIndex, 1);
-                await user.save();
-                res.status(200).json(`${movieTitle} has been removed from user ${id}'s favorites.`);
-            } else {
-                res.status(400).send(`${movieTitle} is not in user ${id}'s favorites.`);
-            }
-        } else {
-            res.status(400).send('No such user');
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error: ' + error);
-    }
+    await Users.findOneAndUpdate(
+      {
+          Username: req.params.Username,
+          FavoriteMovies: req.params.movieID,
+      },
+      {
+          $pull: { FavoriteMovies: req.params.movieID },
+      },
+      { new: true }
+  )
+      .then((updatedUser) => {
+          res.json(updatedUser);
+      })
+      .catch((err) => {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+      });
 });
+
 
 // DELETE user passport.authenticate('jwt', { session: false }), 
 app.delete('/users/:Username', async (req, res) => {
