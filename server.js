@@ -105,8 +105,8 @@ app.put('/users/:Username', async (req, res) => {
 
 
 // Add a favorite movie to a user passport.authenticate('jwt', { session: false }), 
-app.post('/users/:id/movies/:movieTitle', async (req, res) => {
-    const { id, movieTitle } = req.params;
+app.post('/users/:Username/movies/:movieTitle', async (req, res) => {
+    const { Username, movieTitle } = req.params;
 
     try {
         let user = await Users.findById(id);
@@ -125,8 +125,8 @@ app.post('/users/:id/movies/:movieTitle', async (req, res) => {
 
 
 // Remove favorite movie to user  passport.authenticate('jwt', { session: false }), 
-app.delete('/users/:id/movies/:movieTitle', async (req, res) => {
-    const { id, movieTitle } = req.params;
+app.delete('/users/:Username/movies/:movieTitle', async (req, res) => {
+    const { Username, movieTitle } = req.params;
 
     try {
         let user = await Users.findById(id);
