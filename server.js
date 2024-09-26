@@ -117,7 +117,7 @@ app.post('/users', [
 
 
 
-// READ users  passport.authenticate('jwt', { session: false }), 
+// READ users  
 app.get('/users', async (req, res) => {
     try {
         const users = await Users.find();
@@ -157,15 +157,15 @@ app.put('/users/:Username', async (req, res) => {
 
 
 // Add a favorite movie to a user passport.authenticate('jwt', { session: false }), 
-app.post('/users/:Username/movies/:movieTitle', async (req, res) => {
-    const { Username, movieTitle } = req.params;
+app.post('/users/:Username/movies/:Title', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    const { Username, Title } = req.params;
 
     try {
         let user = await Users.findById(id);
         if (user) {
-            user.favoriteMovies.push(movieTitle);
+            user.favoriteMovies.push(Title);
             await user.save();
-            res.status(200).json(`${movieTitle} has been added to user ${id}'s favorites.`);
+            res.status(200).json(`${Title} has been added to user ${id}'s favorites.`);
         } else {
             res.status(400).send('No such user');
         }
@@ -177,7 +177,7 @@ app.post('/users/:Username/movies/:movieTitle', async (req, res) => {
 
 
 // Remove favorite movie to user  passport.authenticate('jwt', { session: false }), 
-app.delete('/users/:Username/movies/:movieTitle', async (req, res) => {
+app.delete('/users/:Username/movies/:Title', passport.authenticate('jwt', { session: false }), async (req, res) => {
     await Users.findOneAndUpdate(
       {
           Username: req.params.Username,
@@ -199,7 +199,7 @@ app.delete('/users/:Username/movies/:movieTitle', async (req, res) => {
 
 
 // DELETE user passport.authenticate('jwt', { session: false }), 
-app.delete('/users/:Username', async (req, res) => {
+app.delete('/users/:Username', passport.authenticate('jwt', { session: false }), async (req, res) => {
     await Users.findOneAndDelete({ Username: req.params.Username })
     .then((user) => {
         if (!user) {
@@ -216,7 +216,7 @@ app.delete('/users/:Username', async (req, res) => {
 
 
 // DELETE id passport.authenticate('jwt', { session: false }), 
-app.delete('/users/:id', async (req, res) => {
+app.delete('/users/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
     const { id } = req.params;
     try {
         const user = await Users.findByIdAndDelete(id);
