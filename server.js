@@ -102,6 +102,8 @@ app.put('/users/:Username', async (req, res) => {
     }
 });
 
+
+
 // Add a favorite movie to a user passport.authenticate('jwt', { session: false }), 
 app.post('/users/:id/movies/:movieTitle', async (req, res) => {
     const { id, movieTitle } = req.params;
@@ -148,6 +150,23 @@ app.delete('/users/:id/movies/:movieTitle', async (req, res) => {
 
 // DELETE user passport.authenticate('jwt', { session: false }), 
 app.delete('/users/:Username', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await Users.findByIdAndDelete(id);
+        if (user) {
+            res.status(200).send(`User ${id} has been deleted.`);
+        } else {
+            res.status(400).send('No such user');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred while deleting the user.');
+    }
+});
+
+
+// DELETE id passport.authenticate('jwt', { session: false }), 
+app.delete('/users/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const user = await Users.findByIdAndDelete(id);
