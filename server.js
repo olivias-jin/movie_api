@@ -112,33 +112,29 @@ app.post('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { session
 });
 
 
-// // Remove favorte movie to user 
-// app.delete('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { session: false }), async (req, res) => {
-//     const { id, movieTitle } = req.params;
+// Remove favorte movie to user 
+app.post('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    const { id, movieTitle } = req.params;
 
-//     if (!mongoose.Types.ObjectId.isValid(id)) {
-//         return res.status(400).send('Invalid user ID');
-//     }
-
-//     try {
-//         let user = await Users.findById(id);
-//         if (user) {
-//             const movieIndex = user.favoriteMovies.indexOf(movieTitle);
-//             if (movieIndex > -1) {
-//                 user.favoriteMovies.splice(movieIndex, 1);
-//                 await user.save();
-//                 res.status(200).json(`${movieTitle} has been removed from user ${id}'s favorites.`);
-//             } else {
-//                 res.status(400).send(`${movieTitle} is not in user ${id}'s favorites.`);
-//             }
-//         } else {
-//             res.status(400).send('No such user');
-//         }
-//     } catch (error) {
-//         console.error('Internal Server Error:', error);
-//         res.status(500).send('Error: ' + error.message);
-//     }
-// });
+    try {
+        let user = await Users.findById(id);
+        if (user) {
+            const movieIndex = user.favoriteMovies.indexOf(movieTitle);
+            if (movieIndex > -1) {
+                user.favoriteMovies.splice(movieIndex, 1);
+                await user.save();
+                res.status(200).json(`${movieTitle} has been removed from user ${id}'s favorites.`);
+            } else {
+                res.status(400).send(`${movieTitle} is not in user ${id}'s favorites.`);
+            }
+        } else {
+            res.status(400).send('No such user');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error: ' + error);
+    }
+});
 
 // DELETE user
 app.delete('/users/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
