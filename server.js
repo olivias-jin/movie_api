@@ -23,10 +23,6 @@ mongoose.connect(CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: tr
 let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
 app.use(cors());
 
-// AFTER your bodyParser middleware function
-let auth = require('./auth')(app);
-const passport = require('passport');
-require('./passport');
 
 app.use(bodyParser.json());
 app.use(passport.initialize());
@@ -117,8 +113,8 @@ app.post('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { session
 });
 
 
-// Remove favorte movie to user 
-app.post('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { session: false }), async (req, res) => {
+// Remove favorite movie to user 
+app.delete('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { session: false }), async (req, res) => {
     const { id, movieTitle } = req.params;
 
     try {
