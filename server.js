@@ -158,18 +158,18 @@ app.delete('/users/:Username/movies/:movieTitle', async (req, res) => {
 
 // DELETE user passport.authenticate('jwt', { session: false }), 
 app.delete('/users/:Username', async (req, res) => {
-    const { Username } = req.params;
-    try {
-        const user = await Users.findByIdAndDelete(Username);
-        if (user) {
-            res.status(200).send(`User ${Username} has been deleted.`);
+    await Users.findOneAndDelete({ Username: req.params.Username })
+    .then((user) => {
+        if (!user) {
+            res.status(400).send(req.params.Username + ' was not found.');
         } else {
-            res.status(400).send('No such user');
+            res.status(200).send(req.params.Username + ' was deleted.');
         }
-    } catch (err) {
+    })
+    .catch((err) => {
         console.error(err);
-        res.status(500).send('An error occurred while deleting the user.');
-    }
+        res.status(500).send('Error: ' + err);
+    });
 });
 
 
