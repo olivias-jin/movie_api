@@ -112,9 +112,10 @@ app.post('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { session
 });
 
 
-// Remove favorte movie to user ** add passport.authenticate 
+// Remove favorte movie to user 
 app.delete('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { session: false }), async (req, res) => {
     const { id, movieTitle } = req.params;
+
     try {
         let user = await Users.findById(id);
         if (user) {
