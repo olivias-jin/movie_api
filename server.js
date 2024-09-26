@@ -69,8 +69,12 @@ app.post('/users', [
     }
 });
 
-// READ users 
-app.get('/users', passport.authenticate('jwt', { session: false }),  async (req, res) => {
+
+
+
+
+// READ users  passport.authenticate('jwt', { session: false }), 
+app.get('/users', async (req, res) => {
     try {
         const users = await Users.find();
         res.status(200).json(users);
@@ -80,8 +84,8 @@ app.get('/users', passport.authenticate('jwt', { session: false }),  async (req,
     }
 });
 
-// Update user by username
-app.put('/users/:Username', passport.authenticate('jwt', { session: false }), async (req, res) => {
+// Update user by username passport.authenticate('jwt', { session: false }), 
+app.put('/users/:Username', async (req, res) => {
     if (req.user.Username !== req.params.Username) {
         return res.status(400).send('Permission denied');
     }
@@ -98,8 +102,8 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), as
     }
 });
 
-// Add a favorite movie to a user
-app.post('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { session: false }), async (req, res) => {
+// Add a favorite movie to a user passport.authenticate('jwt', { session: false }), 
+app.post('/users/:id/movies/:movieTitle', async (req, res) => {
     const { id, movieTitle } = req.params;
 
     try {
@@ -118,8 +122,8 @@ app.post('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { session
 });
 
 
-// Remove favorite movie to user 
-app.delete('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { session: false }), async (req, res) => {
+// Remove favorite movie to user  passport.authenticate('jwt', { session: false }), 
+app.delete('/users/:id/movies/:movieTitle', async (req, res) => {
     const { id, movieTitle } = req.params;
 
     try {
@@ -142,8 +146,8 @@ app.delete('/users/:id/movies/:movieTitle', passport.authenticate('jwt', { sessi
     }
 });
 
-// DELETE user
-app.delete('/users/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+// DELETE user passport.authenticate('jwt', { session: false }), 
+app.delete('/users/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const user = await Users.findByIdAndDelete(id);
@@ -158,8 +162,8 @@ app.delete('/users/:id', passport.authenticate('jwt', { session: false }), async
     }
 });
 
-// READ movies 
-app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
+// READ movies  passport.authenticate('jwt', { session: false }), 
+app.get('/movies', async (req, res) => {
     try {
         const movies = await Movies.find();
         res.status(200).json(movies);
