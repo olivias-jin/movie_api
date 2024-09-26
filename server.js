@@ -23,14 +23,13 @@ mongoose.connect(CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: tr
 let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
 app.use(cors());
 
-app.use(bodyParser.json());
-app.use(passport.initialize());
-
 // AFTER your bodyParser middleware function
 let auth = require('./auth')(app);
 const passport = require('passport');
 require('./passport');
 
+app.use(bodyParser.json());
+app.use(passport.initialize());
 
 // Basic route
 app.get('/', (req, res) => {
