@@ -13,11 +13,11 @@ const app = express();
 
 const Movies = Models.Movie;
 const Users = Models.User;
-const CONNECTION_URI = process.env.CONNECTION_URI;
+const CONNECTION_URI = process.env.CONNECTION_URI || 'mongodb://localhost:27017/myFlixDB';
 
 
 // Connect to MongoDB
-mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // CORS setup
 let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
