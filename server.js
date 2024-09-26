@@ -26,6 +26,12 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(passport.initialize());
 
+// AFTER your bodyParser middleware function
+let auth = require('./auth')(app);
+const passport = require('passport');
+require('./passport');
+
+
 // Basic route
 app.get('/', (req, res) => {
     res.status(200).send('Welcome to Movie API');
