@@ -38,10 +38,32 @@ app.get('/', (req, res) => {
 });
 
 
+// READ movies 
+app.get('/movies', async (req, res) => {
+    try {
+        const movies = await Movies.find();
+        res.status(200).json(movies);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error: ' + error);
+    }
+});
+
+// READ users  
+app.get('/users/:Username', async (req, res) => {
+    try {
+        const users = await Users.find();
+        res.status(200).json(users);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    }
+});
+
 
 //Get movies by genre
 app.get('/genres/:Name', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    await Movies.findOne({ 'Name': req.params.Name})
+    await Movies.findOne({ 'Genre.Name': req.params.Name})
         .then((genre) => {
             if (genre) {
                 res.json(genre);
@@ -59,25 +81,23 @@ app.get('/genres/:Name', passport.authenticate('jwt', { session: false }), async
 
 
 
-  //GET director's name
-app.get('/directors/:name', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    await Movies.findOne({ 'Director.Name': req.params.name })
-        .then((director) => {
-            if (director) {
-                res.json(director.Director);
-            } else {
-                res.status(404).send(
-                    'Director with the name ' +
-                        req.params.name +
-                        ' was not found.'
-                );
-            }
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(500).send('Error: ' + err);
-        });
-  });
+// GET director's details by name
+app.get('/movies/directors/:name', async (req, res) => {
+    console.log('Request received for director:', req.params.name);  // Log to check the request
+    
+    try {
+        const movie = await Movies.findOne({ 'Director.Name': req.params.name });
+        
+        if (movie) {
+            res.json(movie.Director);  // Return the director's details
+        } else {
+            res.status(404).send(`Director with the name ${req.params.name} was not found.`);
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    }
+});
 
 
 
@@ -127,6 +147,8 @@ app.get('/users', async (req, res) => {
         res.status(500).send('Error: ' + err);
     }
 });
+
+
 
 // Update user by username
 app.put('/users/:Username', passport.authenticate('jwt', { session: false }), async (req, res) => {
@@ -231,16 +253,11 @@ app.delete('/users/:id', passport.authenticate('jwt', { session: false }), async
     }
 });
 
-// READ movies 
-app.get('/movies', async (req, res) => {
-    try {
-        const movies = await Movies.find();
-        res.status(200).json(movies);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error: ' + error);
-    }
-});
+
+
+
+
+
 
 
 const port = process.env.PORT || 8080;
