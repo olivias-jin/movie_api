@@ -65,7 +65,7 @@ app.get('/users/:Username', async (req, res) => {
 });
 
 
-//Get movies by genre
+//Get movies by genre 
 app.get('/genres/:Name', passport.authenticate('jwt', { session: false }), async (req, res) => {
     await Movies.findOne({ 'Genre.Name': req.params.Name})
         .then((genre) => {
@@ -85,7 +85,7 @@ app.get('/genres/:Name', passport.authenticate('jwt', { session: false }), async
 
 
 
-// GET director's details by name
+// GET director's details by name 
 app.get('/movies/directors/:name', passport.authenticate('jwt', { session: false }), async (req, res) => {
     console.log('Request received for director:', req.params.name);  // Log to check the request
     
@@ -154,7 +154,7 @@ app.get('/users', async (req, res) => {
 
 
 
-// Update user by username
+// Update user by username 
 app.put('/users/:Username', passport.authenticate('jwt', { session: false }), async (req, res) => {
     if(req.user.Username !== req.params.Username){
         return res.status(400).send('Permission denied');
@@ -182,11 +182,13 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), as
 
 
 
-// Add a favorite movie to a user 
+// Add a favorite movie to a user
 app.post('/users/:Username/movies/:Title', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const user = await Users.findOne({ Username: req.params.Username });
+        
         if (user) {
+            // Check if the movie is already in the user's favorites
             if (!user.favoriteMovies.includes(req.params.Title)) {
                 user.favoriteMovies.push(req.params.Title);
                 await user.save();
@@ -222,18 +224,16 @@ app.delete('/users/:Username/movies/:Title', passport.authenticate('jwt', { sess
 
 // DELETE user 
 app.delete('/users/:Username', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    await Users.findOneAndDelete({ Username: req.params.Username })
-    .then((user) => {
+    try {
+        const user = await Users.findOneAndDelete({ Username: req.params.Username });
         if (!user) {
-            res.status(400).send(req.params.Username + ' was not found.');
-        } else {
-            res.status(200).send(req.params.Username + ' was deleted.');
+            return res.status(404).send(req.params.Username + ' was not found.');
         }
-    })
-    .catch((err) => {
+        res.status(200).send(req.params.Username + ' was deleted.');
+    } catch (err) {
         console.error(err);
-        res.status(500).send('Error: ' + err);
-    });
+        res.status(500).send('Internal Server Error: ' + err.message);
+    }
 });
 
 
