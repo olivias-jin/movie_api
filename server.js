@@ -185,10 +185,20 @@ app.get('/users', async (req, res) => {
 // Update user by username 
 app.put('/users/:Username', passport.authenticate('jwt', { session: false }), async (req, res) => {
     if (req.user.Username !== req.params.Username) {
-        return res.status(400).send('Permission denied');
+        return res.status(403).send('Permission denied'); // 403 for forbidden
+    }
+
+    if (Object.keys(req.body).length === 0) {
+        return res.status(400).send('No fields to update.');
     }
 
     try {
+        // Check if the user exists
+        const user = await Users.findOne({ Username: req.params.Username });
+        if (!user) {
+            return res.status(404).send('User not found.');
+        }
+
         if (req.body.Password) {
             req.body.Password = await bcrypt.hash(req.body.Password, 10); // Hash new password
         }
@@ -198,7 +208,7 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), as
             { $set: req.body },
             { new: true }
         );
-        res.json(updatedUser);
+        res.status(200).json({ message: 'User updated successfully', user: updatedUser });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error: ' + err);
