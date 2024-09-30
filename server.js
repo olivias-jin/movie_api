@@ -29,11 +29,11 @@ mongoose.connect(CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: tr
 let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
 app.use(cors());
 
-
-app.use(bodyParser.json());
-app.use(passport.initialize());
 // authentication 
 let auth = require('./auth')(app);
+app.use(bodyParser.json());
+app.use(passport.initialize());
+
 
 
 // Basic route
@@ -49,6 +49,7 @@ app.get('/protected-route', passport.authenticate('jwt', { session: false }), (r
 
   app.use(passport.initialize());
 
+
 // READ movies 
 app.get('/movies', async (req, res) => {
     try {
@@ -57,6 +58,22 @@ app.get('/movies', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send('Error: ' + error);
+    }
+});
+
+
+// READ Movie by Title  
+app.get('/movies/:title', async (req, res) => {
+    try {
+        const movie  = await Movies.findOne({ Title: req.params.title });
+        if (movie) {
+            res.status(200).json(movie );
+        } else {
+            res.status(404).send('Movie not found');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
     }
 });
 
@@ -77,35 +94,22 @@ app.get('/users/:Username', async (req, res) => {
 
 
 
-//READ/GET all genre route located to "/" as endpoint
-app.get('/genres', passport.authenticate('jwt', { session: false }), async (req,res) => {
-    await Movies.find()
-    .then((genre) => {res.json(genre);
-  
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error:  ' + err);
-    });
-  });
-
 //Get movies by genre 
-app.get('/movies/genres', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    await Movies.findOne({ 'Genre.Name': req.params.Name})
-        .then((genre) => {
-            if (genre) {
-                res.json(genre);
-            } else {
-                res.status(404).send(
-                    'Genre with the name ' + req.params.Name + ' was not found.'
-                );
-            }
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(500).send('Error: ' + err);
-        });
-  });
+app.get('/movies/genre/:name', passport.authenticate('jwt', { session: false }),async (req, res) => {
+    try {
+        const genreName = req.params.name; // Get the genre name from the request parameters
+        const movies = await Movies.find({ 'Genre.Name': genreName }); // Find movies with the specified genre
+
+        if (movies.length > 0) { // Check if any movies were found
+            res.status(200).json({ success: true, movies }); // Return found movies
+        } else {
+            res.status(404).json({ success: false, message: 'No movies found for the genre: ' + genreName }); // Handle no movies found
+        }
+    } catch (err) {
+        console.error('Error fetching movies by genre:', err); // Log any errors with context
+        res.status(500).json({ success: false, message: 'Error: ' + err.message }); // Return internal server error
+    }
+});
 
 
 
@@ -114,7 +118,7 @@ app.get('/movies/directors/:name', passport.authenticate('jwt', { session: false
     console.log('Request received for director:', req.params.name);  // Log to check the request
     
     try {
-        const movie = await Movies.findOne({ 'Director.Name': req.params.name });
+        const movie = await Movies.findOne({ 'Director.Name': { $regex: new RegExp(`^${req.params.name}$`, 'i') } });
         
         if (movie) {
             res.json(movie.Director);  // Return the director's details
@@ -213,18 +217,23 @@ app.use((err, req, res, next) => {
 app.post('/users/:Username/movies/:Title', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const user = await Users.findOne({ Username: req.params.Username });
-        
-        if (user) {
-            // Check if the movie is already in the user's favorites
-            if (!user.favoriteMovies.includes(req.params.Title)) {
-                user.favoriteMovies.push(req.params.Title);
-                await user.save();
-                res.status(200).json(`${req.params.Title} has been added to ${req.params.Username}'s favorites.`);
-            } else {
-                res.status(400).send(`${req.params.Title} is already in favorites.`);
-            }
+        if (!user) {
+            return res.status(404).send('No such user');
+        }
+
+        // Find the movie by title to get its ObjectId
+        const movie = await Movies.findOne({ Title: req.params.Title });
+        if (!movie) {
+            return res.status(404).send('Movie not found');
+        }
+
+        // Check if the movie ObjectId is already in the user's favorites
+        if (!user.FavoriteMovies.includes(movie._id)) {
+            user.FavoriteMovies.push(movie._id); // Use ObjectId
+            await user.save();
+            res.status(200).json(`${req.params.Title} has been added to ${req.params.Username}'s favorites.`);
         } else {
-            res.status(404).send('No such user');
+            res.status(400).send(`${req.params.Title} is already in favorites.`);
         }
     } catch (error) {
         console.error(error);
@@ -232,14 +241,26 @@ app.post('/users/:Username/movies/:Title', passport.authenticate('jwt', { sessio
     }
 });
 
-// Remove favorite movie to user 
-app.delete('/users/:Username', passport.authenticate('jwt', { session: false }), async (req, res) => {
+// Remove favorite movie from user
+app.delete('/users/:Username/movies/:Title', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
-        const user = await Users.findOneAndDelete({ Username: req.params.Username });
+        const user = await Users.findOne({ Username: req.params.Username });
+        
         if (!user) {
             return res.status(404).send(req.params.Username + ' was not found.');
         }
-        res.status(200).send(req.params.Username + ' was deleted.');
+
+        // Find the index of the movie title in the user's favoriteMovies array
+        const movieIndex = user.FavoriteMovies.indexOf(req.params.Title);
+        
+        if (movieIndex > -1) {
+            // Movie found, remove it from the array
+            user.FavoriteMovies.splice(movieIndex, 1);
+            await user.save(); // Save the updated user
+            res.status(200).send(req.params.Title + ' has been removed from ' + req.params.Username + '\'s favorites.');
+        } else {
+            res.status(404).send(req.params.Title + ' is not in ' + req.params.Username + '\'s favorites.');
+        }
     } catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error: ' + err.message);
