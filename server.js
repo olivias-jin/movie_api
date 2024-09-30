@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const passport = require('passport');
+
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 const bcrypt = require('bcryptjs');
@@ -31,12 +32,22 @@ app.use(cors());
 
 app.use(bodyParser.json());
 app.use(passport.initialize());
+// authentication 
+let auth = require('./auth')(app);
+
 
 // Basic route
 app.get('/', (req, res) => {
     res.status(200).send('Welcome to Movie API');
 });
 
+
+app.get('/protected-route', passport.authenticate('jwt', { session: false }), (req, res) => {
+    res.send('This is a protected route');
+  });
+
+
+  app.use(passport.initialize());
 
 // READ movies 
 app.get('/movies', async (req, res) => {
@@ -65,8 +76,21 @@ app.get('/users/:Username', async (req, res) => {
 });
 
 
+
+//READ/GET all genre route located to "/" as endpoint
+app.get('/genres', passport.authenticate('jwt', { session: false }), async (req,res) => {
+    await Movies.find()
+    .then((genre) => {res.json(genre);
+  
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error:  ' + err);
+    });
+  });
+
 //Get movies by genre 
-app.get('/genres/:Name', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.get('/movies/genres', passport.authenticate('jwt', { session: false }), async (req, res) => {
     await Movies.findOne({ 'Genre.Name': req.params.Name})
         .then((genre) => {
             if (genre) {
@@ -156,28 +180,31 @@ app.get('/users', async (req, res) => {
 
 // Update user by username 
 app.put('/users/:Username', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    if(req.user.Username !== req.params.Username){
+    if (req.user.Username !== req.params.Username) {
         return res.status(400).send('Permission denied');
     }
- await Users.findOneAndUpdate({Username:req.params.Username},
-  {
-    $set: {
-      Username: req.body.Username,
-      Password: req.body.Password,
-      Email: req.body.Email,
-      Birthday: req.body.Birthday,
-    },
 
-  },
-  {new: true}
- )
- .then((updatedUser) => {
-  res.json(updatedUser);
-})
-.catch((err) => {
-  console.error(err);
-  res.status(500).send('Error: ' + err);
+    try {
+        if (req.body.Password) {
+            req.body.Password = await bcrypt.hash(req.body.Password, 10); // Hash new password
+        }
+
+        const updatedUser = await Users.findOneAndUpdate(
+            { Username: req.params.Username },
+            { $set: req.body },
+            { new: true }
+        );
+        res.json(updatedUser);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    }
 });
+
+// Centralized error handling
+app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).send('Internal Server Error: ' + err.message);
 });
 
 
@@ -206,19 +233,16 @@ app.post('/users/:Username/movies/:Title', passport.authenticate('jwt', { sessio
 });
 
 // Remove favorite movie to user 
-app.delete('/users/:Username/movies/:Title', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.delete('/users/:Username', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
-        const user = await Users.findOne({ Username: req.params.Username });
-        if (user) {
-            user.favoriteMovies = user.favoriteMovies.filter(movie => movie !== req.params.Title);
-            await user.save();
-            res.status(200).json(`${req.params.Title} has been removed from ${req.params.Username}'s favorites.`);
-        } else {
-            res.status(404).send('No such user');
+        const user = await Users.findOneAndDelete({ Username: req.params.Username });
+        if (!user) {
+            return res.status(404).send(req.params.Username + ' was not found.');
         }
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error: ' + error);
+        res.status(200).send(req.params.Username + ' was deleted.');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error: ' + err.message);
     }
 });
 
@@ -235,27 +259,6 @@ app.delete('/users/:Username', passport.authenticate('jwt', { session: false }),
         res.status(500).send('Internal Server Error: ' + err.message);
     }
 });
-
-
-// DELETE id 
-app.delete('/users/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    const { id } = req.params;
-    try {
-        const user = await Users.findByIdAndDelete(id);
-        if (user) {
-            res.status(200).send(`User ${id} has been deleted.`);
-        } else {
-            res.status(400).send('No such user');
-        }
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred while deleting the user.');
-    }
-});
-
-
-
-
 
 
 
