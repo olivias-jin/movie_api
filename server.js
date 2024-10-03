@@ -29,9 +29,10 @@ mongoose.connect(CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: tr
 let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
 app.use(cors());
 
+app.use(bodyParser.json());
+
 // authentication 
 let auth = require('./auth')(app);
-app.use(bodyParser.json());
 app.use(passport.initialize());
 
 
