@@ -226,6 +226,9 @@ app.use((err, req, res, next) => {
 
 // Add a favorite movie to a user
 app.post('/users/:Username/movies/:Title', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    if (req.user.Username !== req.params.Username) {
+        return res.status(403).send('Permission denied'); 
+    }
     try {
         const user = await Users.findOne({ Username: req.params.Username });
         if (!user) {
@@ -258,6 +261,9 @@ app.post('/users/:Username/movies/:Title', passport.authenticate('jwt', { sessio
 
 // Remove favorite movie from user
 app.delete('/users/:Username/movies/:Title', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    if (req.user.Username !== req.params.Username) {
+        return res.status(403).send('Permission denied'); 
+    }
     try {
         // Find the user by Username
         const user = await Users.findOne({ Username: req.params.Username });
