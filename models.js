@@ -57,7 +57,8 @@ const userSchema = new mongoose.Schema({
     Username: { type: String, required: true },
     Password: { type: String, required: true },
     Email: { type: String, required: true },
-    Birthday: Date
+    Birthday: Date,
+    FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref:'Movie'}]
   });
   
   // This method will be used to compare the entered password with the hashed password stored in the database
@@ -80,5 +81,8 @@ const userSchema = new mongoose.Schema({
   });
   
   const User = mongoose.model('User', userSchema);
+  const Movie = mongoose.model('Movie', movieSchema);
+
   
   module.exports.User = User;
+  module.exports.Movie = Movie;

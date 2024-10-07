@@ -232,14 +232,18 @@ app.post('/users/:Username/movies/:Title', passport.authenticate('jwt', { sessio
             return res.status(404).send('No such user');
         }
 
-        // Find the movie by title to get its ObjectId
         const movie = await Movies.findOne({ Title: req.params.Title });
         if (!movie) {
             return res.status(404).send('Movie not found');
         }
 
+        // Ensure FavoriteMovies array exists
+        if (!user.FavoriteMovies) {
+            user.FavoriteMovies = []; // Initialize if undefined
+        }
+
         // Check if the movie ObjectId is already in the user's favorites
-        if (!user.FavoriteMovies.includes(movie._id)) {
+        if (!user.FavoriteMovies.map(String).includes(String(movie._id))) {
             user.FavoriteMovies.push(movie._id); // Use ObjectId
             await user.save();
             res.status(200).json(`${req.params.Title} has been added to ${req.params.Username}'s favorites.`);
@@ -255,22 +259,33 @@ app.post('/users/:Username/movies/:Title', passport.authenticate('jwt', { sessio
 // Remove favorite movie from user
 app.delete('/users/:Username/movies/:Title', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
+        // Find the user by Username
         const user = await Users.findOne({ Username: req.params.Username });
-        
         if (!user) {
-            return res.status(404).send(req.params.Username + ' was not found.');
+            return res.status(404).send(`${req.params.Username} was not found.`);
         }
 
-        // Find the index of the movie title in the user's favoriteMovies array
-        const movieIndex = user.FavoriteMovies.indexOf(req.params.Title);
-        
+        // Find the movie by title to get its ObjectId
+        const movie = await Movies.findOne({ Title: req.params.Title });
+        if (!movie) {
+            return res.status(404).send(`${req.params.Title} was not found.`);
+        }
+
+        // Ensure that FavoriteMovies is defined and is an array
+        if (!Array.isArray(user.FavoriteMovies)) {
+            return res.status(400).send('FavoriteMovies list is not properly defined.');
+        }
+
+        // Find the index of the movie ObjectId in the user's FavoriteMovies array
+        const movieIndex = user.FavoriteMovies.indexOf(movie._id);
+
         if (movieIndex > -1) {
             // Movie found, remove it from the array
             user.FavoriteMovies.splice(movieIndex, 1);
             await user.save(); // Save the updated user
-            res.status(200).send(req.params.Title + ' has been removed from ' + req.params.Username + '\'s favorites.');
+            res.status(200).send(`${req.params.Title} has been removed from ${req.params.Username}'s favorites.`);
         } else {
-            res.status(404).send(req.params.Title + ' is not in ' + req.params.Username + '\'s favorites.');
+            res.status(404).send(`${req.params.Title} is not in ${req.params.Username}'s favorites.`);
         }
     } catch (err) {
         console.error(err);
