@@ -66,19 +66,19 @@ const userSchema = new mongoose.Schema({
     return bcrypt.compareSync(password, this.Password);
   };
   
-  // Pre-save hook to hash the password before saving it
-  userSchema.pre('save', async function(next) {
-    const user = this;
-    if (!user.isModified('Password')) return next();
+  // // Pre-save hook to hash the password before saving it
+  // userSchema.pre('save', async function(next) {
+  //   const user = this;
+  //   if (!user.isModified('Password')) return next();
   
-    try {
-      const salt = await bcrypt.genSalt(10);
-      user.Password = await bcrypt.hash(user.Password, salt);
-      next();
-    } catch (err) {
-      next(err);
-    }
-  });
+  //   try {
+  //     const salt = await bcrypt.genSalt(10);
+  //     user.Password = await bcrypt.hash(user.Password, salt);
+  //     next();
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // });
   
   const User = mongoose.model('User', userSchema);
   const Movie = mongoose.model('Movie', movieSchema);
