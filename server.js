@@ -26,8 +26,17 @@ const CONNECTION_URI = process.env.CONNECTION_URI || 'mongodb://localhost:27017/
 mongoose.connect(CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // CORS setup
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
-app.use(cors());
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com','http://localhost:1234','https://myflix-client-oj.netlify.app'];
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {//If a speific origin isn't found on the list of allowed origin
+            let message = 'The CORS policy for this application doesn`t allow access from origin' + origin;
+            return callback(new Error(message), false);
+        }
+        return callback(null, true);
+    }
+}));
 
 app.use(bodyParser.json());
 
@@ -45,10 +54,10 @@ app.get('/', (req, res) => {
 
 app.get('/protected-route', passport.authenticate('jwt', { session: false }), (req, res) => {
     res.send('This is a protected route');
-  });
+});
 
 
-  app.use(passport.initialize());
+app.use(passport.initialize());
 
 
 // READ movies 
@@ -66,9 +75,9 @@ app.get('/movies', async (req, res) => {
 // READ Movie by Title  
 app.get('/movies/:title', async (req, res) => {
     try {
-        const movie  = await Movies.findOne({ Title: req.params.title });
+        const movie = await Movies.findOne({ Title: req.params.title });
         if (movie) {
-            res.status(200).json(movie );
+            res.status(200).json(movie);
         } else {
             res.status(404).send('Movie not found');
         }
@@ -96,7 +105,7 @@ app.get('/users/:Username', async (req, res) => {
 
 
 //Get movies by genre 
-app.get('/movies/genre/:name', passport.authenticate('jwt', { session: false }),async (req, res) => {
+app.get('/movies/genre/:name', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const genreName = req.params.name; // Get the genre name from the request parameters
         const movies = await Movies.find({ 'Genre.Name': genreName }); // Find movies with the specified genre
@@ -117,10 +126,10 @@ app.get('/movies/genre/:name', passport.authenticate('jwt', { session: false }),
 // GET director's details by name 
 app.get('/movies/directors/:name', passport.authenticate('jwt', { session: false }), async (req, res) => {
     console.log('Request received for director:', req.params.name);  // Log to check the request
-    
+
     try {
         const movie = await Movies.findOne({ 'Director.Name': { $regex: new RegExp(`^${req.params.name}$`, 'i') } });
-        
+
         if (movie) {
             res.json(movie.Director);  // Return the director's details
         } else {
@@ -145,7 +154,7 @@ app.post('/users', [
     if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
     }
-    
+
     let hashedPassword = await bcrypt.hash(req.body.Password, 10); // Hashing the password
     try {
         let user = await Users.findOne({ Username: req.body.Username });
@@ -227,7 +236,7 @@ app.use((err, req, res, next) => {
 // Add a favorite movie to a user
 app.post('/users/:Username/movies/:Title', passport.authenticate('jwt', { session: false }), async (req, res) => {
     if (req.user.Username !== req.params.Username) {
-        return res.status(403).send('Permission denied'); 
+        return res.status(403).send('Permission denied');
     }
     try {
         const user = await Users.findOne({ Username: req.params.Username });
@@ -262,7 +271,7 @@ app.post('/users/:Username/movies/:Title', passport.authenticate('jwt', { sessio
 // Remove favorite movie from user
 app.delete('/users/:Username/movies/:Title', passport.authenticate('jwt', { session: false }), async (req, res) => {
     if (req.user.Username !== req.params.Username) {
-        return res.status(403).send('Permission denied'); 
+        return res.status(403).send('Permission denied');
     }
     try {
         // Find the user by Username
