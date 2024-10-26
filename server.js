@@ -47,7 +47,7 @@ app.use(passport.initialize());
 
 
 // Serve static files from the "public" directory
-app.use('/images',expess.static(path.join(__dirname, 'public/images')));
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
 // Basic route
 app.get('/', (req, res) => {
