@@ -11,6 +11,7 @@ const bcrypt = require('bcryptjs');
 const uuid = require('uuid');
 
 const app = express();
+const path =require('path');
 
 // app.use(express.static('public'));
 // app.use(express.json());
@@ -45,6 +46,8 @@ let auth = require('./auth')(app);
 app.use(passport.initialize());
 
 
+// Serve static files from the "public" directory
+app.use('/images',expess.static(path.join(__dirname, 'public/images')));
 
 // Basic route
 app.get('/', (req, res) => {
